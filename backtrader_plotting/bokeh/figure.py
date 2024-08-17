@@ -9,14 +9,17 @@ import pandas as pd
 
 from bokeh.models import Span
 from bokeh.plotting import figure
-from bokeh.models import HoverTool, CrosshairTool, LinearAxis, DataRange1d, Renderer, ColumnDataSource, FuncTickFormatter, DatetimeTickFormatter
+from bokeh.models import HoverTool, CrosshairTool, LinearAxis, DataRange1d, Renderer, ColumnDataSource, CustomJSTickFormatter, DatetimeTickFormatter
 from bokeh.models.formatters import NumeralTickFormatter
 
 from backtrader_plotting.bokeh.utils import convert_color, sanitize_source_name, get_bar_width, convert_linestyle
 from backtrader_plotting.utils import get_plotlineinfo, get_tradingdomain, get_ind_areas, get_source_id
 from backtrader_plotting.bokeh.marker import build_marker_call
 from backtrader_plotting.bokeh.hover_container import HoverContainer
-from  backtrader_plotting.bokeh import labelizer
+from backtrader_plotting.bokeh import labelizer
+
+from backtrader.observers.broker import Broker
+from backtrader.observers.trades import Trades
 
 
 class Figure(object):
@@ -43,11 +46,18 @@ class Figure(object):
 
     def _init_figure(self):
         # plot height will be set later
-        f = figure(tools=Figure._tools,
-                   x_axis_type='linear',
-                   aspect_ratio=self._scheme.plotaspectratio,
-                   output_backend="webgl",
-                   )
+        if isinstance(self.master, Broker) |  isinstance(self.master, Trades):
+            f = figure(tools=Figure._tools,
+                    x_axis_type='linear',
+                    aspect_ratio=self._scheme.plotaspectratio,
+                    output_backend="webgl"
+                    )
+        else:
+            f = figure(tools=Figure._tools,
+                    x_axis_type='linear',
+                    aspect_ratio=self._scheme.plotaspectratio,
+                    output_backend="webgl"
+                    )
 
         f.y_range.range_padding = self._scheme.y_range_padding
 
@@ -72,17 +82,17 @@ class Figure(object):
 
         # mechanism for proper date axis without gaps, thanks!
         # https://groups.google.com/a/continuum.io/forum/#!topic/bokeh/t3HkalO4TGA
-        f.xaxis.formatter = FuncTickFormatter(
+        f.xaxis.formatter = CustomJSTickFormatter(
             args=dict(
                 axis=f.xaxis[0],
-                formatter=DatetimeTickFormatter(days=[self._scheme.axis_tickformat_days],
-                                                hourmin=[self._scheme.axis_tickformat_hourmin],
-                                                hours=[self._scheme.axis_tickformat_hours],
-                                                minsec=[self._scheme.axis_tickformat_minsec],
-                                                minutes=[self._scheme.axis_tickformat_minutes],
-                                                months=[self._scheme.axis_tickformat_months],
-                                                seconds=[self._scheme.axis_tickformat_seconds],
-                                                years=[self._scheme.axis_tickformat_years],
+                formatter=DatetimeTickFormatter(days=self._scheme.axis_tickformat_days,
+                                                hourmin=self._scheme.axis_tickformat_hourmin,
+                                                hours=self._scheme.axis_tickformat_hours,
+                                                minsec=self._scheme.axis_tickformat_minsec,
+                                                minutes=self._scheme.axis_tickformat_minutes,
+                                                months=self._scheme.axis_tickformat_months,
+                                                seconds=self._scheme.axis_tickformat_seconds,
+                                                years=self._scheme.axis_tickformat_years,
                                                 ),
                 source=self._cds,
             ),
