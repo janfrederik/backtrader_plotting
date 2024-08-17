@@ -73,6 +73,6 @@ class TableGenerator(object):
                 col_name = f'col{i}'
                 cds.add(c[2:], col_name)
                 columns.append(TableColumn(field=col_name, title=c[0], formatter=self._get_formatter(c[1])))
-            column_height = len(table_columns[0]) * 25
-            elems.append(DataTable(source=cds, columns=columns, index_position=None, height=column_height))
+            column_height = min(10, len(table_columns[0])) * 25
+            elems.append(DataTable(source=cds, columns=columns, index_position=None, height=column_height, sizing_mode="stretch_width", max_height=300, scroll_to_selection=True))
         return Paragraph(text=title, styles={'font-size': 'large'}), elems
