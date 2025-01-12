@@ -339,7 +339,8 @@ class Bokeh(metaclass=bt.MetaParams):
             g = gridplot([[x.bfigure] for x in objects],
                          toolbar_options={'logo': None},
                          toolbar_location=self.p.scheme.toolbar_location,
-                         sizing_mode=self.p.scheme.plot_sizing_mode
+                         sizing_mode=self.p.scheme.plot_sizing_mode,
+                        #  width=self.p.scheme.plot_width,
                          )
             panels.append(Panel(title=panel_title, child=g))
             self._on_post_generate_tab(panel_title, objects)
@@ -372,7 +373,7 @@ class Bokeh(metaclass=bt.MetaParams):
             metapanel = Panel(child=meta, title="Meta")
             panels.append(metapanel)
 
-        model = Tabs(tabs=panels)
+        model = Tabs(tabs=panels, sizing_mode='stretch_width')
 
         # attach the model to the underlying figure for later reference (e.g. unit test)
         figurepage.model = model

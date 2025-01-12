@@ -52,6 +52,7 @@ class Scheme(_BtPlotScheme):
         self.analyzer_tab_num_cols = 3
         self.plotaspectratio = 3.0
         self.plot_sizing_mode = "stretch_width"
+        # self.plot_width = 1600
 
         self.toolbar_location = "right"
 
