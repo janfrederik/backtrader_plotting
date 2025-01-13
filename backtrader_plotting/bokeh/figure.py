@@ -9,7 +9,7 @@ import pandas as pd
 
 from bokeh.models import Span
 from bokeh.plotting import figure
-from bokeh.models import HoverTool, CrosshairTool, LinearAxis, DataRange1d, Renderer, ColumnDataSource, CustomJSTickFormatter, DatetimeTickFormatter
+from bokeh.models import HoverTool, CrosshairTool, LinearAxis, DataRange1d, Renderer, ColumnDataSource, CustomJSTickFormatter, DatetimeTickFormatter, Span
 from bokeh.models.formatters import NumeralTickFormatter
 
 from backtrader_plotting.bokeh.utils import convert_color, sanitize_source_name, get_bar_width, convert_linestyle
@@ -25,6 +25,9 @@ from backtrader.observers.trades import Trades
 class Figure(object):
     """Class that wraps a *single* figure."""
     _tools = "pan,wheel_zoom,box_zoom,reset"
+
+    _shared_vertical_crosshair_span = Span(dimension="height")
+
 
     def __init__(self, strategy: bt.Strategy, cds: ColumnDataSource, hoverc: HoverContainer, start, end, scheme, master, plotorder):
         self._strategy = strategy
@@ -121,7 +124,11 @@ class Figure(object):
             """
             )
 
-        ch = CrosshairTool(line_color=self._scheme.crosshair_line_color)
+        individual_horizontal_crosshair_span = Span(dimension="width")
+        ch = CrosshairTool(
+            overlay=[individual_horizontal_crosshair_span, self._shared_vertical_crosshair_span],
+            line_color=self._scheme.crosshair_line_color
+        )
         f.tools.append(ch)
 
         h = HoverTool(tooltips=[('Time', f'@datetime{{{self._scheme.hovertool_timeformat}}}')],
