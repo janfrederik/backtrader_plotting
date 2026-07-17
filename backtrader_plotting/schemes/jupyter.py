@@ -8,6 +8,7 @@ class BlacklyJupyter(Blackly):
 
         self.tag_pre_background_color = None
         self.tag_pre_text_color = None
+        self.plotaspectratio = "auto"
 
 
 class TradimoJupyter(Tradimo):
@@ -16,3 +17,4 @@ class TradimoJupyter(Tradimo):
 
         self.tag_pre_background_color = None
         self.tag_pre_text_color = None
+        self.plotaspectratio = "auto"
